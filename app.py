@@ -51,4 +51,11 @@ def whatsapp_reply():
         })
         print(f"[ERROR] {e}")
         return "Internal server error", 500
+    
+    if __name__ == "__main__":
+        
+@app.route("/health", methods=["GET"])
+def health():
+    return "Empathibot is alive!", 200
+
 
