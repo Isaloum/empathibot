@@ -21,7 +21,6 @@ def whatsapp_reply():
     twilio_response.message(str(response))
     return str(twilio_response)
 
-if __name__ == "__main__":
     import os
 
 if __name__ == "__main__":
