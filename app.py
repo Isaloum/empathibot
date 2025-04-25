@@ -21,8 +21,7 @@ def whatsapp_reply():
     twilio_response.message(str(response))
     return str(twilio_response)
 
-
-# ✅ THIS PART IS CRITICAL
+# ✅ Render-compatible server config
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    port = int(os.environ.get("PORT", 5000))  # Use Render’s assigned port
+    app.run(host="0.0.0.0", port=port)        # Listen on all interfaces
