@@ -22,23 +22,33 @@ app = Flask(__name__)
 
 @app.route("/whatsapp", methods=["POST"])
 def whatsapp_reply():
-    incoming_msg = request.form.get("Body", "").strip()
-    db.collection("messages").add({
-    "text": incoming_msg,
-    "timestamp": firestore.SERVER_TIMESTAMP
-})
+    try:
+        incoming_msg = request.form.get("Body", "").strip()
+        sender = request.form.get("From", "")  # 🆕 Who sent the message?
 
-    print(f"User: {incoming_msg}")
+        response = llm.invoke(f"Respond empathetically to this message: {incoming_msg}")
 
-    response = llm.invoke(f"Respond empathetically to this message: {incoming_msg}")
-    print(f"Empathibot: {response}")
+        # 🆕 Save full context to Firestore
+        db.collection("messages").add({
+            "text": incoming_msg,
+            "response": str(response),  # ✅ Save bot’s reply too
+            "sender": sender,
+            "timestamp": firestore.SERVER_TIMESTAMP
+        })
 
-    twilio_response = MessagingResponse()
-    twilio_response.message(str(response))
-    return str(twilio_response)
+        print(f"User ({sender}): {incoming_msg}")
+        print(f"Empathibot: {response}")
 
-# ✅ Render-compatible startup block
-if __name__ == "__main__":
-    print("✅ Flask app is starting properly on Render...")
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+        twilio_response = MessagingResponse()
+        twilio_response.message(str(response))
+        return str(twilio_response)
+
+    except Exception as e:
+        # 🛑 Log errors in Firestore
+        db.collection("errors").add({
+            "error": str(e),
+            "timestamp": firestore.SERVER_TIMESTAMP
+        })
+        print(f"[ERROR] {e}")
+        return "Internal server error", 500
+
