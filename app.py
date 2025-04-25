@@ -1,3 +1,5 @@
+
+
 from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
 from dotenv import load_dotenv
@@ -21,7 +23,8 @@ def whatsapp_reply():
     twilio_response.message(str(response))
     return str(twilio_response)
 
-# ✅ Render-compatible server config
+# ✅ Render-compatible startup block
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Use Render’s assigned port
-    app.run(host="0.0.0.0", port=port)        # Listen on all interfaces
+    print("✅ Flask app is starting properly on Render...")
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
