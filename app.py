@@ -1,3 +1,5 @@
+import firebase_admin
+from firebase_admin import credentials, firestore
 
 
 from flask import Flask, request
@@ -7,6 +9,10 @@ from langchain_community.llms import OpenAI
 import os
 
 load_dotenv()
+cred = credentials.Certificate("firebase_config.json")
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+
 llm = OpenAI(temperature=0.7)
 
 app = Flask(__name__)
@@ -14,6 +20,11 @@ app = Flask(__name__)
 @app.route("/whatsapp", methods=["POST"])
 def whatsapp_reply():
     incoming_msg = request.form.get("Body", "").strip()
+    db.collection("messages").add({
+    "text": incoming_msg,
+    "timestamp": firestore.SERVER_TIMESTAMP
+})
+
     print(f"User: {incoming_msg}")
 
     response = llm.invoke(f"Respond empathetically to this message: {incoming_msg}")
