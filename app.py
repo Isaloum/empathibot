@@ -9,7 +9,7 @@ from langchain_community.llms import OpenAI
 import os
 
 load_dotenv()
-cred = credentials.Certificate("firebase_config.json")
+cred = credentials.Certificate(os.getenv("FIREBASE_CONFIG_PATH"))
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
