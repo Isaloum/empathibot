@@ -51,11 +51,14 @@ def whatsapp_reply():
         })
         print(f"[ERROR] {e}")
         return "Internal server error", 500
-    
-    if __name__ == "__main__":
-        
-@app.route("/health", methods=["GET"])
+    @app.route("/health", methods=["GET"])
 def health():
     return "Empathibot is alive!", 200
+    
+    if __name__ == "__main__":
+         print("✅ Flask app is starting properly on Render...")
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+
 
 
