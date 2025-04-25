@@ -1,21 +1,22 @@
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-
 from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
 from dotenv import load_dotenv
 from langchain_community.llms import OpenAI
 import os
+import json
 
 load_dotenv()
-import json
+
+# Firebase setup
 firebase_json = os.getenv("FIREBASE_CONFIG_JSON")
 cred = credentials.Certificate(json.loads(firebase_json))
-
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+# LLM setup
 llm = OpenAI(temperature=0.7)
 
 app = Flask(__name__)
@@ -51,14 +52,14 @@ def whatsapp_reply():
         })
         print(f"[ERROR] {e}")
         return "Internal server error", 500
-    @app.route("/health", methods=["GET"])
+
+# ✅ Health check route
+@app.route("/health", methods=["GET"])
 def health():
     return "Empathibot is alive!", 200
-    
-    if __name__ == "__main__":
-         print("✅ Flask app is starting properly on Render...")
+
+# ✅ Required for Render
+if __name__ == "__main__":
+    print("✅ Flask app is starting properly on Render...")
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
-
-
